@@ -1,0 +1,213 @@
+html, body, h1, form, fieldset, legend, ol, li {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: #ffffff;
+	color: #111111;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	padding: 20px;
+}
+
+	h1 {
+		font-size: 28px;
+		margin-bottom: 20px;
+		text-transform: uppercase;
+	}
+
+	h2 { 
+		display: block;
+		margin-bottom: 20px;
+	}
+
+	h2 span {
+		font-size: 16px;
+		margin-bottom: 20px;
+		text-transform: uppercase;
+		color: #aaa;
+		float: left;
+		margin-right: 15px;
+		padding: 4px;
+		background-color: #eee;
+	}
+
+	h2 span.active {
+		background-color: #006;
+		color: white;
+	}
+	
+	form {
+		background: #aac;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		-khtml-border-radius: 5px;
+		border-radius: 5px;
+		counter-reset: fieldsets;
+		padding: 20px;
+		width: 600px;
+	}
+		
+		form fieldset {
+			border: none;
+			margin-bottom: 10px;
+		}
+		
+		form fieldset:last-of-type {
+			margin-bottom: 0;
+		}
+			
+			form legend {
+				color: #00a;
+				font-size: 16px;
+				font-weight: bold;
+				padding-bottom: 10px;
+				text-shadow: 0 1px 1px #cce;
+			}
+
+			
+			form ol li {
+				background: #b9cf6a;
+				background: rgba(255,255,255,.3);
+				border-color: #e3ebc3;
+				border-color: rgba(255,255,255,.6);
+				border-style: solid;
+				border-width: 2px;
+				-moz-border-radius: 5px;
+				-webkit-border-radius: 5px;
+				-khtml-border-radius: 5px;
+				border-radius: 5px;
+				line-height: 30px;
+				list-style: none;
+				padding: 5px 10px;
+				margin-bottom: 2px;
+			}
+							
+			form label {
+				float: left;
+				font-size: 13px;
+				width: 110px;
+			}
+
+
+			fieldset#quesType span label, fieldset#quesEffects span label, fieldset#addTrueFalse span label {
+				float: none;
+				vertical-align: middle;
+			}
+
+			fieldset#quesType .radios input, fieldset#quesEffects .radios input, fieldset#addTrueFalse .radios input {
+				vertical-align: middle;
+				margin: 0 3px 0 0;
+				padding: 0;
+			}
+
+			fieldset#quesType ol li.radios span, fieldset#quesEffects ol li.radios span, fieldset#addTrueFalse ol li.radios span {
+				display: block;
+				float: left;
+				margin-right: 20px;
+			}
+
+			form input[type="text"],
+			form input[type="file"],
+			form textarea {
+				background: #ffffff;
+				border: none;
+				-moz-border-radius: 3px;
+				-webkit-border-radius: 3px;
+				-khtml-border-radius: 3px;
+				border-radius: 3px;
+				font: italic 13px Georgia, "Times New Roman", Times, serif;
+				outline: none;
+				padding: 5px;
+				width: 200px;
+			}
+
+				form input#mdsURL { width: 375px; }
+
+				form textarea {
+					width: 460px;
+					height: 100px;
+				}
+
+				fieldset#addTrueFalse .radios input.customLabels {
+					width: 140px;
+					padding-left: 6px;
+				}
+
+				form input:not([type=submit]):focus,
+				form textarea:focus {
+					background: #eaeaea;
+				}
+
+				#scoringRange0, #scoringRange1, #scoringRange2, #scoringRange3, #scoringRange4 {
+					width: 50px;
+					margin-right: 10px;
+				}
+
+				#scoringLabels span, #answerLabels span {
+					position: relative;
+					top: 0px;
+					font-size: 13px;
+				}
+
+				#scoringLabels span.one { left: 122px; }
+				#scoringLabels span.two { left: 145px; }
+
+				#answerLabels { margin-top: 15px; }
+				#answerLabels span.one { left: 122px; }
+				#answerLabels span.two { left: 310px; }
+
+				.photoInput { margin-left: 15px; width: 80px; }
+				.bump { margin-top: 25px; }
+
+			form button {
+				background: #006;
+				border: none;
+				-moz-border-radius: 20px;
+				-webkit-border-radius: 20px;
+				-khtml-border-radius: 20px;
+				border-radius: 20px;
+				color: #ffffff;
+				display: block;
+				font: 18px Georgia, "Times New Roman", Times, serif;
+				letter-spacing: 1px;
+				margin: 10px auto;
+				padding: 7px 25px;
+				text-shadow: 0 1px 1px #000000;
+				text-transform: uppercase;
+			}
+					
+				form button:hover {
+					background: #00a;
+					cursor: pointer;
+				}
+
+#codeOutput {
+	width: 600px;
+	height: 400px;
+}
+
+.popup { 
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1em;
+	display: none; 
+	height:10em;
+	padding:15px;
+	width:500px; 
+	background: white;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-khtml-border-radius: 10px;
+	border-radius: 10px;
+	-moz-box-shadow: 1px 1px 24px black;
+	-webkit-box-shadow: 1px 1px 24px black;
+	box-shadow: 1px 1px 24px black;
+	text-align:center;
+}
+
+#urlPopup1, #photoPopup1, #photoPopup2, #ansPopup2 { height: 4em; }
+#urlPopup2 { height: 10em; }
+
+
+.bClose {cursor:pointer;font-weight:bold;position:absolute;right:15px;text-decoration:none;top:10px;}
+

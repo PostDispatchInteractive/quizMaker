@@ -1,0 +1,24 @@
+---------------------------------------------------------------------------------------
+Script Name: HTML Quiz Maker
+Description: This script enables Post-Dispatch staffers to write questions for a quiz.
+             Outputs HTML code that can be copied and pasted into TCMS or Blox.
+             Requires four digits from the path to the quiz's MDS directory.
+     Author: Josh Renaud
+    Version: 0.2
+       Date: 2012-11-05
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+
+CHANGELOG
+
+2012-11-05-- v0.2
+
+* Implemented custom true/false labels. Now you can use "Yes"/"No", "Big"/"Small", "Hi"/"Low",
+  or anything you can think of.
+
+* quizMaker can now add the "Dissolve" effect to MultiChoice and True/False questions.
+  (But NOT to MultiPhoto questions).
+
+
+
