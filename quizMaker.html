@@ -16,14 +16,20 @@
 </h2>
 
 <form id="credits">
-	<fieldset>
+	<fieldset id="credits">
 		<legend>Credits</legend>
 		<ol>
 		<li><label for="byline">Byline:</label><textarea id="byline">Johnny Reporter</textarea></li>
 		<li><label for="sources">Sources:</label><textarea id="sources">News service name, Website name</textarea></li>
-		<li><label for="mdsURL">MDS directory</label><input type="text" placeholder="1234" id="mdsURL" required></li>
+		<li class="override">
+			<span><input id="pubs" value="stltoday" name="pubs" type="checkbox" checked="checked" /><label for="pubs">This quiz is for STLtoday.com &nbsp;&nbsp;&nbsp;&nbsp; (uncheck if it's for another website)</label></span>
+			&nbsp;
+		</li>
+		<li class="mdsURL"><label for="mdsURL">MDS code</label><input type="text" placeholder="1234" id="mdsURL" class="photoURLs"></li>
+		<li class="otherURL"><label for="otherURL">Photo directory</label><input type="text" placeholder="http://website.com/directory/dir/" id="otherURL" class="photoURLs"></li>
 		</ol>
-		<p>(Use the four digits from the MDS directory where you uploaded your photo ZIP file. For example, "3406" from http://interact.stltoday.com/mds/news/html/3406 )
+		<p class="photonote-stltoday">(Type the four digits from the MDS directory where you uploaded your photos. <br/>For example, "3406" from http://interact.stltoday.com/mds/news/html/3406 )</p>
+		<p class="photonote-other">(Please enter a URL to the directory where your quiz's photos will be stored. )</p>
 	</fieldset>
 	<button id="addButton">Add questions &rarr;</button>
 </form>
@@ -133,6 +139,11 @@
 
 <textarea id="codeOutput"></textarea>
 
+<div id="urlPopup1" class="popup">
+	<a class="bClose">X</a>
+	<p>You have to type in a MDS code.</p>
+</div>
+
 <div id="urlPopup2" class="popup">
 	<a class="bClose">X</a>
 	<p>Something is not quite right with your MDS code.
@@ -141,9 +152,9 @@
 	<p><em>In that example, the code would be <strong>1234</strong>. Easy, huh?</em></p>
 </div>
 
-<div id="urlPopup1" class="popup">
+<div id="urlPopup3" class="popup">
 	<a class="bClose">X</a>
-	<p>You have to fill out your MDS URL.</p>
+	<p>You have to type in a URL to the directory for your quiz's photos.</p>
 </div>
 
 <div id="bylineSourcesPopup" class="popup">

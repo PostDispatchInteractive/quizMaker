@@ -83,6 +83,12 @@ body {
 				margin-bottom: 2px;
 			}
 							
+			form ol li.override {
+				background: transparent;
+				border: 0px;
+				padding-left: 0px;
+			}
+
 			form label {
 				float: left;
 				font-size: 13px;
@@ -90,18 +96,25 @@ body {
 			}
 
 
-			fieldset#quesType span label, fieldset#quesEffects span label, fieldset#addTrueFalse span label {
+			fieldset#quesType span label, 
+			fieldset#quesEffects span label, 
+			fieldset#credits span label, 
+			fieldset#addTrueFalse span label {
 				float: none;
 				vertical-align: middle;
 			}
 
-			fieldset#quesType .radios input, fieldset#quesEffects .radios input, fieldset#addTrueFalse .radios input {
+			fieldset#quesType .radios input, 
+			fieldset#quesEffects .radios input, 
+			fieldset#addTrueFalse .radios input {
 				vertical-align: middle;
 				margin: 0 3px 0 0;
 				padding: 0;
 			}
 
-			fieldset#quesType ol li.radios span, fieldset#quesEffects ol li.radios span, fieldset#addTrueFalse ol li.radios span {
+			fieldset#quesType ol li.radios span, 
+			fieldset#quesEffects ol li.radios span, 
+			fieldset#addTrueFalse ol li.radios span {
 				display: block;
 				float: left;
 				margin-right: 20px;
@@ -122,7 +135,7 @@ body {
 				width: 200px;
 			}
 
-				form input#mdsURL { width: 375px; }
+				form input.photoURLs { width: 375px; }
 
 				form textarea {
 					width: 460px;

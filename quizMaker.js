@@ -4,6 +4,7 @@ var quesNum = 0;
 var basePath = '';
 var byline = '';
 var sources = '';
+var stltoday = true;
 
 
 // jQUERY READY HANDLER
@@ -18,12 +19,32 @@ jQuery(document).ready(function($) {
 	$('#quizMaker form#quiz fieldset').hide();
 	$('#quizMaker form').hide();
 	$('#quizMaker form#quiz button').hide();
+
+	$('#quizMaker form li.otherURL').hide();
+	$('#quizMaker form .photonote-other').hide();
+
 	$('#quizMaker form#credits').show();
 	$('#quizMaker form').submit(function () { return false; });
 	$('#labelCredits').addClass('active');
 
 	$('#addButton').click(addedCredits);
 
+	$('#pubs').click( function(){
+		if ( $(this).is(':checked') ) { 
+			stltoday = true;
+			$('#quizMaker form li.otherURL').hide();
+			$('#quizMaker form .photonote-other').hide();
+			$('#quizMaker form li.mdsURL').show();
+			$('#quizMaker form .photonote-stltoday').show();
+		}
+		else { 
+			stltoday = false;
+			$('#quizMaker form li.mdsURL').hide();
+			$('#quizMaker form .photonote-stltoday').hide();
+			$('#quizMaker form li.otherURL').show();
+			$('#quizMaker form .photonote-other').show();
+		}
+	});
 
 
 	function outputCode(snippet) {
@@ -33,23 +54,35 @@ jQuery(document).ready(function($) {
 
 	function addedCredits() {
 
-//		var urlValidateRegex = /^http:\/\/images.stltoday.com\/mds\/0000(\d\d\d\d)\/content\/$/;
-		var urlValidateRegex = /^(\d\d\d\d)$/;
+		var urlValidateRegex = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:(?:[^\s()<>.]+[.]?)+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\))+(?:\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/gi;
+		var mdsValidateRegex = /^(\d\d\d\d)$/;
 		var bylineValidate = 'Johnny Reporter';
 		var sourcesValidate = 'News service name, Website name';
 
 		// Test to make sure they included a URL (and in the right format).
 
-		// Is the MDS directory field empty? Pop an error message and send them back to work
-		if ( !$("#mdsURL").val() ) {
+		// Is the MDS code field empty? Pop an error message and send them back to work
+		if ( !$("#mdsURL").val() && stltoday == true ) {
 			$('#urlPopup1').bPopup({
 				onClose:function(){ $('#mdsURL').focus(); }
 			});
 		}
-		// Is the MDS directory field wrong? Pop an error message and send them back to work.
-		else if ( !urlValidateRegex.test($("#mdsURL").val()) ) {
+		// Is the MDS code field wrong? Pop an error message and send them back to work.
+		else if ( !mdsValidateRegex.test( $("#mdsURL").val() )  && stltoday === true) {
 			$('#urlPopup2').bPopup({
 				onClose:function(){ $('#mdsURL').focus(); }
+			});
+		}
+		// Is the photo directory field empty? Pop an error message and send them back to work.
+		else if ( !$("#otherURL").val() && stltoday != true ) {
+			$('#urlPopup3').bPopup({
+				onClose:function(){ $('#otherURL').focus(); }
+			});
+		}
+		// Is the photo directory field wrong? Pop an error message and send them back to work.
+		else if ( !urlValidateRegex.test( $("#otherURL").val() ) && stltoday === false ) {
+			$('#urlPopup3').bPopup({
+				onClose:function(){ $('#otherURL').focus(); }
 			});
 		}
 		// Is the byline field unchanged? Pop an error message and send them back to work.
@@ -72,7 +105,13 @@ jQuery(document).ready(function($) {
 			byline = $('#byline').val();
 			sources = $('#sources').val();
 			var baseFragment = $('#mdsURL').val();
-			basePath = 'http://images.stltoday.com/mds/0000'+baseFragment+'/content/';
+			if ( stltoday ) {
+				basePath = 'http://images.stltoday.com/mds/0000' + baseFragment + '/content/';
+			}
+			else {
+				basePath = $("#otherURL").val();
+			}
+
 			outputCode('<div id="quiz">\r\n');
 			outputCode('\t<div class="spinningWheel"><span>The quiz is loading</span></div>\r\n');
 
@@ -100,8 +139,9 @@ jQuery(document).ready(function($) {
 			if ( $(this).attr('value') === 'multiple 2x2') { addMultiPhoto(); }
 			else if ( $(this).attr('value') === 'multiple choice') { addMultiChoice(); }
 			else if ( $(this).attr('value') === 'true/false') { addTrueFalse(); }
-
 		});
+
+
 	}
 
 

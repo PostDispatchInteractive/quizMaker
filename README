@@ -4,13 +4,19 @@ Description: This script enables Post-Dispatch staffers to write questions for a
              Outputs HTML code that can be copied and pasted into TCMS or Blox.
              Requires four digits from the path to the quiz's MDS directory.
      Author: Josh Renaud
-    Version: 0.2
+    Version: 0.2b
        Date: 2012-11-05
 ---------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------
 
 CHANGELOG
+
+2012-11-05-- v0.2b
+
+* Added checkbox on Credits screen to let non-STLtoday.com publications use a photo directory
+  different from MDS.
+
 
 2012-11-05-- v0.2
 
