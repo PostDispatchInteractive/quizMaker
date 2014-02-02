@@ -67,6 +67,7 @@ body {
 
 			
 			form ol li {
+				position: relative;
 				background: #b9cf6a;
 				background: rgba(255,255,255,.3);
 				border-color: #e3ebc3;
@@ -170,7 +171,7 @@ body {
 				#answerLabels span.one { left: 122px; }
 				#answerLabels span.two { left: 310px; }
 
-				.photoInput { margin-left: 15px; width: 80px; }
+				.field-photo { margin-left: 15px; width: 80px; }
 				.bump { margin-top: 25px; }
 
 			form button {
@@ -194,6 +195,23 @@ body {
 					background: #00a;
 					cursor: pointer;
 				}
+
+
+
+.wordCount {
+	position: absolute;
+	bottom: 20px;
+	right: 25px;
+	font-size: 12px;
+	font-family: 'Lucida Console', monospace;
+	font-weight: bold;
+	padding: 4px;
+	background-color: #999;
+	line-height: 12px;
+	border-radius: 8px;
+	box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.4);
+	color: white;
+}
 
 #codeOutput {
 	width: 600px;

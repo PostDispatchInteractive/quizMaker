@@ -1,7 +1,7 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="quizMaker.css" />
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript" src="quizMaker.js"></script>
 </head>
 <body>
@@ -22,7 +22,7 @@
 		<li><label for="byline">Byline:</label><textarea id="byline">Johnny Reporter</textarea></li>
 		<li><label for="sources">Sources:</label><textarea id="sources">News service name, Website name</textarea></li>
 		<li class="override">
-			<span><input id="pubs" value="stltoday" name="pubs" type="checkbox" checked="checked" /><label for="pubs">This quiz is for STLtoday.com &nbsp;&nbsp;&nbsp;&nbsp; (uncheck if it's for another website)</label></span>
+			<span><input id="pubs" value="stltoday" name="pubs" type="checkbox" checked="checked" /><label for="pubs">This quiz is for STLtoday.com &nbsp;&nbsp;&nbsp;&nbsp; (Uncheck if it's for another website)</label></span>
 			&nbsp;
 		</li>
 		<li class="mdsURL"><label for="mdsURL">MDS code</label><input type="text" placeholder="1234" id="mdsURL" class="photoURLs"></li>
@@ -30,6 +30,15 @@
 		</ol>
 		<p class="photonote-stltoday">(Type the four digits from the MDS directory where you uploaded your photos. <br/>For example, "3406" from http://interact.stltoday.com/mds/news/html/3406 )</p>
 		<p class="photonote-other">(Please enter a URL to the directory where your quiz's photos will be stored. )</p>
+		<ol>
+		<li class="override">
+			<span><input id="cover" value="false" name="cover" type="checkbox" /><label for="cover">This quiz needs a title screen &nbsp;&nbsp;&nbsp;&nbsp; (Required if you will use sound effects)</label></span>
+			&nbsp;
+		</li>
+		<li class="coverFields"><label for="coverImage">Cover image</label><input type="file" id="coverImage" class=""></li>
+		<li class="coverFields"><label for="coverText">Cover text</label><textarea id="coverText" class="">&lt;span class=&quot;warning&quot;&gt;Warning:&lt;/span&gt; Sounds accompany each answer. You might want to adjust the volume if you are at work.</textarea></li>
+		</ol>
+		<p class="coverFields">(If this is a quiz with sound effects, you should leave the text above unchanged.)</p>
 	</fieldset>
 	<button id="addButton">Add questions &rarr;</button>
 </form>
@@ -48,44 +57,44 @@
 	<fieldset id="addMultiPhoto">
 		<legend>Add multiple choice question with 4 photos</legend>
 		<ol>
-			<li><label for="mpQuestion">Question</label><textarea id="mpQuestion">?</textarea></li>
+			<li><label for="mpQuestion">Question</label><textarea id="mpQuestion" class="field-question">?</textarea><div class="wordCount"></div></li>
 		</ol>
 		<div id="answerLabels"><span class="one">Text</span><span class="two">Photo file name</span></div>
 		<ol>
-			<li><label for="mpAns0">Correct answer</label><input type="text" placeholder="0" id="mpAns0"><input type="file" id="mpPho0" class="photoInput" /></li>
-			<li><label for="mpAns1">Wrong answer</label><input type="text" placeholder="1" id="mpAns1"><input type="file" id="mpPho1" class="photoInput" /></li>
-			<li><label for="mpAns2">Wrong answer</label><input type="text" placeholder="2" id="mpAns2"><input type="file" id="mpPho2" class="photoInput" /></li>
-			<li><label for="mpAns3">Wrong answer</label><input type="text" placeholder="3" id="mpAns3"><input type="file" id="mpPho3" class="photoInput" /></li>
-			<li class="bump"><label for="mpResponse">Response</label><textarea id="mpResponse">Explanation of answer</textarea></li>
+			<li><label for="mpAns0">Correct answer</label><input type="text" placeholder="0" id="mpAns0" class="field-answer"><input type="file" id="mpPho0" class="field-photo" /></li>
+			<li><label for="mpAns1">Wrong answer</label><input type="text" placeholder="1" id="mpAns1" class="field-answer"><input type="file" id="mpPho1" class="field-photo" /></li>
+			<li><label for="mpAns2">Wrong answer</label><input type="text" placeholder="2" id="mpAns2" class="field-answer"><input type="file" id="mpPho2" class="field-photo" /></li>
+			<li><label for="mpAns3">Wrong answer</label><input type="text" placeholder="3" id="mpAns3" class="field-answer"><input type="file" id="mpPho3" class="field-photo" /></li>
+			<li class="bump"><label for="mpResponse">Response</label><textarea id="mpResponse" class="field-response">Explanation of answer</textarea><div class="wordCount"></div></li>
 		</ol>
 	</fieldset>
 
 	<fieldset id="addMultiChoice">
 		<legend>Add multiple choice question</legend>
 		<ol>
-			<li><label for="mcQuestion">Question</label><textarea id="mcQuestion">?</textarea></li>
+			<li><label for="mcQuestion">Question</label><textarea id="mcQuestion" class="field-question">?</textarea><div class="wordCount"></div></li>
 		</ol>
 		<ol>
-			<li><label for="mcAns0">Correct answer</label><input type="text" placeholder="0" id="mcAns0"></li>
-			<li><label for="mcAns1">Wrong answer</label><input type="text" placeholder="1" id="mcAns1"></li>
-			<li><label for="mcAns2">Wrong answer</label><input type="text" placeholder="2" id="mcAns2"></li>
-			<li><label for="mcAns3">Wrong answer</label><input type="text" placeholder="3" id="mcAns3"></li>
+			<li><label for="mcAns0">Correct answer</label><input type="text" placeholder="0" id="mcAns0" class="field-answer"></li>
+			<li><label for="mcAns1">Wrong answer</label><input type="text" placeholder="1" id="mcAns1" class="field-answer"></li>
+			<li><label for="mcAns2">Wrong answer</label><input type="text" placeholder="2" id="mcAns2" class="field-answer"></li>
+			<li><label for="mcAns3">Wrong answer</label><input type="text" placeholder="3" id="mcAns3" class="field-answer"></li>
 		</li></ol>
 		<ol>
-			<li><label for="mcPho0">Photo file name</label><input type="file" id="mcPho0" class="photoInput" /></li>
-			<li class="bump"><label for="mcResponse">Response</label><textarea id="mcResponse">Explanation of answer</textarea></li>
+			<li><label for="mcPho0">Photo file name</label><input type="file" id="mcPho0" class="field-photo" /></li>
+			<li class="bump"><label for="mcResponse">Response</label><textarea id="mcResponse" class="field-response">Explanation of answer</textarea><div class="wordCount"></div></li>
 		</ol>
 	</fieldset>
 
 	<fieldset id="addTrueFalse">
 		<legend>Add true / false question</legend>
 		<ol>
-			<li><label for="tfQuestion">Question</label><textarea id="tfQuestion">?</textarea></li>
+			<li><label for="tfQuestion">Question</label><textarea id="tfQuestion" class="field-question">?</textarea><div class="wordCount"></div></li>
 		</ol>
 		<ol><li class="radios">
 			<label>Answer</label>
 			<span>
-				<input id="true" value="true" name="trueFalse" type="radio" /><label for="true" class="tfLabels">True</label>
+				<input id="true" class="field-truefalse" value="true" name="trueFalse" type="radio" /><label for="true" class="tfLabels">True</label>
 				<input id="trueLabel" class="customLabels" type="text" placeholder="True" />
 			</span>
 			<span>
@@ -99,19 +108,24 @@
 			&nbsp;
 		</li></ol>
 		<ol>
-			<li><label for="tfPho0">Photo file name</label><input type="file" id="tfPho0" class="photoInput" /></li>
-			<li class="bump"><label for="tfResponse">Response</label><textarea id="tfResponse">Explanation of answer</textarea></li>
+			<li><label for="tfPho0">Photo file name</label><input type="file" id="tfPho0" class="field-photo" /></li>
+			<li class="bump"><label for="tfResponse">Response</label><textarea id="tfResponse" class="field-response">Explanation of answer</textarea><div class="wordCount"></div></li>
 		</ol>
 	</fieldset>
 
 	<fieldset id="quesEffects">
 		<legend>Special effects</legend>
-		<ol><li class="radios">
-			<span><input id="effectDissolve" value="effect-dissolve" name="quesEffects" type="checkbox" /><label for="effectDissolve">Dissolve (show second image, after user answers)</label></span>
-			&nbsp;
-		</li></ol>
-		<ol class="effectDissolve">
-			<li><label for="effectDissolvePhoto">Photo file name</label><input type="file" id="effectDissolvePhoto" class="photoInput" /></li>
+		<ol class="dissolve">
+			<li class="radios"><span><input id="effectDissolve" value="effect-dissolve" name="effectDissolve" type="checkbox" /><label for="effectDissolve">Dissolve (show image(s) after user answers)</label></span>&nbsp;</li>
+		</ol>
+		<ol class="dissolve effectPicker">
+			<li><label for="effectDissolvePhoto">Photo file name</label><input type="file" id="effectDissolvePhoto" class="field-photo" /></li>
+		</ol>
+		<ol class="sound">
+			<li class="radios"><span><input id="effectSound" value="effect-sound" name="effectSound" type="checkbox" /><label for="effectSound">Sound (plays after user answers)</label></span>&nbsp;</li>
+		</ol>
+		<ol class="sound effectPicker">
+			<li><label for="effectSoundFile">Sound file name</label><input type="file" id="effectSoundFile" class="field-sound" /></li>
 		</ol>
 	</fieldset>
 
@@ -124,11 +138,11 @@
 		<legend>Assign scoring</legend>
 		<div id="scoringLabels"><span class="one">Range</span><span class="two">Evaluation</span></div>
 		<ol>
-			<li><label for="scoringRange0">&gt;=</label><input type="text" placeholder="0" id="scoringRange0"><input type="text" placeholder="You are very smart" id="evaluation0"></li>
-			<li><label for="scoringRange1">&lt;=</label><input type="text" placeholder="0" id="scoringRange1"><input type="text" placeholder="Snarky comment" id="evaluation1"></li>
-			<li><label for="scoringRange2">&lt;=</label><input type="text" placeholder="0" id="scoringRange2"><input type="text" placeholder="Snarky comment" id="evaluation2"></li>
-			<li><label for="scoringRange3">&lt;=</label><input type="text" placeholder="0" id="scoringRange3"><input type="text" placeholder="Snarky comment" id="evaluation3"></li>
-			<li><label for="scoringRange4">&lt;=</label><input type="text" placeholder="0" id="scoringRange4"><input type="text" placeholder="You are not very smart" id="evaluation4"></li>
+			<li><label for="scoringRange0">&gt;=</label><input type="text" placeholder="0" id="scoringRange0" class="scoringRange"><input type="text" placeholder="You are very smart" id="evaluation0" class="evaluation"></li>
+			<li><label for="scoringRange1">&lt;=</label><input type="text" placeholder="0" id="scoringRange1" class="scoringRange"><input type="text" placeholder="Snarky comment" id="evaluation1" class="evaluation"></li>
+			<li><label for="scoringRange2">&lt;=</label><input type="text" placeholder="0" id="scoringRange2" class="scoringRange"><input type="text" placeholder="Snarky comment" id="evaluation2" class="evaluation"></li>
+			<li><label for="scoringRange3">&lt;=</label><input type="text" placeholder="0" id="scoringRange3" class="scoringRange"><input type="text" placeholder="Snarky comment" id="evaluation3" class="evaluation"></li>
+			<li><label for="scoringRange4">&lt;=</label><input type="text" placeholder="0" id="scoringRange4" class="scoringRange"><input type="text" placeholder="You are not very smart" id="evaluation4" class="evaluation"></li>
 			<li class="bump"><label for="judgment">Photo</label><input type="file" id="judgment" /></li>
 			<li class="bump"><label for="scoringResponse">Call to action</label><textarea id="scoringResponse">Check out our &lt;a href="http://www.stltoday.com/news/multimedia/" &gt;recent multimedia&lt;/a&gt;.</textarea></li>
 		</ol>
@@ -185,6 +199,16 @@
 <div id="effectPopup1" class="popup">
 	<a class="bClose">X</a>
 	<p>Oops! You chose to use a Dissolve effect, so you have to include a second photo.</p>
+</div>
+
+<div id="coverPopup1" class="popup">
+	<a class="bClose">X</a>
+	<p>Oops! You chose to use a cover, so you have to include a cover image.</p>
+</div>
+
+<div id="coverPopup2" class="popup">
+	<a class="bClose">X</a>
+	<p>Oops! You chose to use a cover, so you have to include cover text.</p>
 </div>
 
 </body>
