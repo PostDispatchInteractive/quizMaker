@@ -2,13 +2,13 @@
 // ==  
 // ==  TO DO LIST
 // ==  
-// ==  * Refactor the Dissolve effect code, so multiple photos can be added
+// ==  * Refactor effect so that they can be used on Judgment screen. 
+// ==  	- Right now effects fieldset lives within Quiz form.
+// ==  	- Also, script doesn't check for effects on Judgment screen yet either.
 // ==  
 // ==  * Refactor the Zoom effect code. 
 // ==  	- Zoom in/out radio buttons should show up as children of Dissolve, 
 // ==  	  since Zoom only works with a second photo.
-// ==  
-// ==  * Refactor the Sound effect code, so "before" sound can be added (only "after" works now)
 // ==  
 // ==  * Fix Dissolve effect when used with multiphoto questions. There's one in Space Quiz.
 // ==  
@@ -21,28 +21,48 @@
 
 
 var questions = [];
+var judgment = '';
 var quesNum = 0;
 var basePath = '';
 var byline = '';
 var sources = '';
 var stltoday = true;
 var cover = false;
+// Only set to true for editing this script
 var debug = false;
 
 
 // This variable and function are used for sanitizing input
 var entityMap = {
-	"&": "&amp;",
-	"<": "&lt;",
-	">": "&gt;",
-	'"': '&quot;',
-	"'": '&#39;',
-	"/": '&#x2F;'
+	'&' : '&amp;',
+	// There are a lot more special characters in the source code of this page: http://dan.hersam.com/tools/html-entities.html
+	'\u2018' : '&lsquo;',
+	'\ufffd' : '&lsquo;',
+	'\u201b' : '&lsquo;',
+	'\u2019' : '&rsquo;',
+	'\u201c' : '&ldquo;',
+	'\u201d' : '&rdquo;',
+	'<' : '&lt;',
+	'>' : '&gt;',
+	'"' : '&quot;',
+	'\'': '&#39;',
+	'/' : '&#x2F;'
 };
 function escapeHtml(string) {
-	return String(string).replace(/[&<>"'\/]/g, function (s) {
+	return String(string).replace(/[&\u2018\ufffd\u201b\u2019\u201c\u201d<>"'\/]/g, function (s) {
 		return entityMap[s];
 	});
+}
+
+
+// Function object creator
+function question() {
+	this.quesType = false;
+	this.sound = false;
+	this.dissolve = false;
+	this.zoomIn = false;
+	this.zoomOut = false;
+	this.scroll = false;
 }
 
 
@@ -52,7 +72,7 @@ function escapeHtml(string) {
 
 jQuery(document).ready(function($) {
 
-	$.getScript("http://images.stltoday.com/mds/00003409/content/jquery.bpopup-0.5.0.min.js");
+	$.getScript("http://images.stltoday.com/mds/00003409/content/jquery.bpopup-0.9.4.min.js");
 
 	$('#codeOutput').hide();
 	$('#quizMaker form#quiz fieldset').hide();
@@ -111,16 +131,6 @@ jQuery(document).ready(function($) {
 		$('#codeOutput').val( $('#codeOutput').val() + snippet );
 	}
 
-	// Function object creator
-	function question() {
-		this.quesType = false;
-		this.sound = false;
-		this.dissolve = false;
-		this.zoomIn = false;
-		this.zoomOut = false;
-		this.scroll = false;
-	}
-
 	function wordCount($textField) {
 		var content = $textField.val();
 		var matches = content.match(/\S+\s*/g);
@@ -129,6 +139,7 @@ jQuery(document).ready(function($) {
 	}
 
 	function countColor() {
+		console.log('countColor');
 		var numWords = wordCount( $(this) );
 		var color = '#080'; 
 		if ( numWords > 34 ) { color = '#A00'; } 
@@ -214,12 +225,13 @@ jQuery(document).ready(function($) {
 
 			// Output cover image code if we need one
 			if ( cover ) {
-				var coverPhoto = $('#coverImage').val().split("\\").pop();
+				var coverPhoto = encodeURI( basePath + $('#coverImage').val().split("\\").pop() );
 				var coverText = $('#coverText').val();
 				outputCode('\t<div class="cover">\r\n');
-				outputCode('\t\t<img id="quizCover" src="' + basePath + coverPhoto + '" />\r\n');
+				outputCode('\t\t<img id="quizCover" src="' + coverPhoto + '" />\r\n');
 				outputCode('\t\t<p>' + coverText + '</p>\r\n');
 				outputCode('\t</div>\r\n');
+				outputCode('\t<div id="playButton" class="joshButtons"><span>Play!</span></div>\r\n');
 			}
 
 			addQuestions();
@@ -228,11 +240,14 @@ jQuery(document).ready(function($) {
 
 
 	function addQuestions() {
+		$('ol.dissolve.effectPicker li:not(:first-child)').remove();
+		$('ol.sound.effectPicker li:nth-child(1)').hide();
 		$('#quizMaker form#credits').hide();
 		$('#quizMaker form#quiz fieldset#addMultiChoice').hide();
 		$('#quizMaker form#quiz fieldset#addTrueFalse').hide();
 		$('#quizMaker form#quiz fieldset#addMultiPhoto').hide();
 		$('#quizMaker form#quiz fieldset#quesEffects').hide();
+		$('#quizMaker form#quiz fieldset#quesEffects .supplemental' ).hide();
 		$('#quizMaker form#quiz button').hide();
 		$('#quizMaker form#quiz').show();
 		$('#quizMaker form#quiz fieldset#quesType').show();
@@ -274,7 +289,6 @@ jQuery(document).ready(function($) {
 		}
 
 		$('#addMultiPhoto textarea').unbind();
-
 		$('#addMultiPhoto textarea').keyup( countColor );
 
 		$('#quesEffects input:checkbox').click( function(){
@@ -308,6 +322,10 @@ jQuery(document).ready(function($) {
 		if ( debug ) { 
 			preFill( $('#quizMaker form#quiz fieldset#addMultiChoice') ); 
 		}
+
+		$('#addMultiChoice textarea').unbind();
+		$('#addMultiChoice textarea').keyup( countColor );
+
 		$('#quesEffects input:checkbox').click( function(){
 			// did we check or uncheck?
 			if ( $(this).is(':checked') ) { 
@@ -362,6 +380,10 @@ jQuery(document).ready(function($) {
 				$('.customLabels').hide();
 			}
 		});
+
+		$('#addTrueFalse textarea').unbind();
+		$('#addTrueFalse textarea').keyup( countColor );
+
 		$('#quesEffects input:checkbox').click( function(){
 			// did we check or uncheck?
 			if ( $(this).is(':checked') ) { 
@@ -405,33 +427,84 @@ jQuery(document).ready(function($) {
 
 	function addEffect(effect) {
 		$('#quizMaker form#quiz fieldset#quesEffects .' + effect + '.effectPicker' ).show();
+		$('#quizMaker form#quiz fieldset#quesEffects .' + effect + ' .supplemental' ).show();
 		questions[quesNum][effect] = true;
+		/* effect specific code */
+		if ( effect == 'dissolve' ) {
+			$('#effectDissolveNum').off();
+			$('#effectDissolveNum').click(function(){
+				var dissolveNum = parseInt( $('#effectDissolveNum').val() );
+				var $effectPicker = $('ol.dissolve.effectPicker li:first-child');
+				$('ol.dissolve.effectPicker li').remove();
+				for (var x=0; x<dissolveNum; x++ ) {
+					var y=x+1;
+					$newPicker = $effectPicker.clone();
+					$newPicker.children('label').text('Photo file name ' + y);
+					$newPicker.appendTo('ol.dissolve.effectPicker');
+				}
+			});
+		}
+		if ( effect == 'sound' ) {
+			$('#effectSoundType').off();
+			$('#effectSoundType').click(function(){
+				var soundType = $('#effectSoundType').val();
+				if ( soundType == 'after' ) {
+					$('ol.sound.effectPicker li:nth-child(1)').hide();
+					$('ol.sound.effectPicker li:nth-child(2)').show();
+				}
+				else if ( soundType == 'before' ) {
+					$('ol.sound.effectPicker li:nth-child(1)').show();
+					$('ol.sound.effectPicker li:nth-child(2)').hide();
+				}
+				else {
+					$('ol.sound.effectPicker li:nth-child(1)').show();
+					$('ol.sound.effectPicker li:nth-child(2)').show();
+				}
+			});
+		}
+
 	}
 
 	function removeEffect(effect) {
 		$('#quizMaker form#quiz fieldset#quesEffects .' + effect + '.effectPicker').hide();
+		$('#quizMaker form#quiz fieldset#quesEffects .' + effect + ' .supplemental' ).hide();
 		questions[quesNum][effect] = false;
+		/* effect specific code */
 	}
 
 	function checkForm(whatToDo) {
+		// First, go through all dissolve elements and check if any are empty.
+		// If so, store a reference to the first empty one, which we can use later.
+		var dissolveEmpty = false;
+		var dissolveEmptyElement = null;
+		if ( questions[quesNum].dissolve ) {
+			$('.field-effect-dissolve').each(function(index, element) {
+				if( $(element).val().trim() === '' ) {
+					dissolveEmpty = true;
+					dissolveEmptyElement = $(element);
+					return false;
+				}
+			});
+		}
+
 		if (questions[quesNum].quesType === 'multiple 2x2') {
 			// make sure they included all the answers.
-			if (!$('#mpAns0').val()) {
+			if ( !$('#mpAns0').val() ) {
 				$('#ansPopup1').bPopup({
 					onClose:function(){ $('#mpAns0').focus(); }
 				});
 			}
-			else if (!$('#mpAns1').val()) {
+			else if ( !$('#mpAns1').val() ) {
 				$('#ansPopup1').bPopup({
 					onClose:function(){ $('#mpAns1').focus(); }
 				});
 			}
-			else if (!$('#mpAns2').val()) {
+			else if ( !$('#mpAns2').val() ) {
 				$('#ansPopup1').bPopup({
 					onClose:function(){ $('#mpAns2').focus(); }
 				});
 			}
-			else if (!$('#mpAns3').val()) {
+			else if ( !$('#mpAns3').val() ) {
 				$('#ansPopup1').bPopup({
 					onClose:function(){ $('#mpAns3').focus(); }
 				});
@@ -439,22 +512,22 @@ jQuery(document).ready(function($) {
 			// ok, good, we have all the answers.
 			else {
 				// make sure they included photos
-				if (!$('#mpPho0').val()) {
+				if ( !$('#mpPho0').val() ) {
 					$('#photoPopup1').bPopup({
 						onClose:function(){ $('#mpPho0').focus(); }
 					});
 				}
-				else if (!$('#mpPho1').val()) {
+				else if ( !$('#mpPho1').val() ) {
 					$('#photoPopup1').bPopup({
 						onClose:function(){ $('#mpPho1').focus(); }
 					});
 				}
-				else if (!$('#mpPho2').val()) {
+				else if ( !$('#mpPho2').val() ) {
 					$('#photoPopup1').bPopup({
 						onClose:function(){ $('#mpPho2').focus(); }
 					});
 				}
-				else if (!$('#mpPho3').val()) {
+				else if ( !$('#mpPho3').val() ) {
 					$('#photoPopup1').bPopup({
 						onClose:function(){ $('#mpPho3').focus(); }
 					});
@@ -462,37 +535,37 @@ jQuery(document).ready(function($) {
 				// ok, good, we have all the photos.
 				else {
 					// make sure they included extra effect information, if necessary.
-					if (questions[quesNum].dissolve && !$('#effectDissolvePhoto').val() ) {
+					if ( questions[quesNum].dissolve && dissolveEmpty ) {
 						$('#effectPopup1').bPopup({
-							onClose:function(){ $('#effectDissolvePhoto').focus(); }
+							onClose:function(){ dissolveEmptyElement.focus(); }
 						});
 					}
 					// ok, good, we have all extra effect information. let's output it
 					else {
-						if (whatToDo === 'more') { process(); }
-						else if (whatToDo === 'score') { assignScoring(); }
+						if ( whatToDo === 'more' ) { process(); }
+						else if ( whatToDo === 'score' ) { assignScoring(); }
 					}
 				}
 			}
 		}
-		else if (questions[quesNum].quesType === 'multiple choice') {
+		else if ( questions[quesNum].quesType === 'multiple choice' ) {
 			// make sure they included all the answers.
-			if (!$('#mcAns0').val()) {
+			if ( !$('#mcAns0').val() ) {
 				$('#ansPopup1').bPopup({
 					onClose:function(){ $('#mcAns0').focus(); }
 				});
 			}
-			else if (!$('#mcAns1').val()) {
+			else if ( !$('#mcAns1').val() ) {
 				$('#ansPopup1').bPopup({
 					onClose:function(){ $('#mcAns1').focus(); }
 				});
 			}
-			else if (!$('#mcAns2').val()) {
+			else if ( !$('#mcAns2').val() ) {
 				$('#ansPopup1').bPopup({
 					onClose:function(){ $('#mcAns2').focus(); }
 				});
 			}
-			else if (!$('#mcAns3').val()) {
+			else if ( !$('#mcAns3').val() ) {
 				$('#ansPopup1').bPopup({
 					onClose:function(){ $('#mcAns3').focus(); }
 				});
@@ -500,7 +573,7 @@ jQuery(document).ready(function($) {
 			// ok, good, we have all the answers.
 			else {
 				// make sure they included a photo
-				if (!$('#mcPho0').val()) {
+				if ( !$('#mcPho0').val() ) {
 					$('#photoPopup2').bPopup({
 						onClose:function(){ $('#mcPho0').focus(); }
 					});
@@ -508,9 +581,9 @@ jQuery(document).ready(function($) {
 				// ok, good, we have the photo. let's output it
 				else {
 					// make sure they included extra effect information, if necessary.
-					if (questions[quesNum].dissolve && !$('#effectDissolvePhoto').val() ) {
+					if ( questions[quesNum].dissolve && dissolveEmpty ) {
 						$('#effectPopup1').bPopup({
-							onClose:function(){ $('#effectDissolvePhoto').focus(); }
+							onClose:function(){ dissolveEmptyElement.focus(); }
 						});
 					}
 					// ok, good, we have all extra effect information. let's output it
@@ -525,13 +598,13 @@ jQuery(document).ready(function($) {
 			// make sure they included an answer.
 			var flagTrue = $('#true').is(':checked');
 			var flagFalse = $('#false').is(':checked');
-			if (!flagTrue && !flagFalse) {
+			if ( !flagTrue && !flagFalse ) {
 				$('#ansPopup2').bPopup();
 			}
 			// ok, good, we have the answer.
 			else {
 				// make sure they included a photo
-				if (!$('#tfPho0').val()) {
+				if ( !$('#tfPho0').val() ) {
 					$('#photoPopup2').bPopup({
 						onClose:function(){ $('#tfPho0').focus(); }
 					});
@@ -539,15 +612,15 @@ jQuery(document).ready(function($) {
 				// ok, good, we have the photo. let's output it
 				else {
 					// make sure they included extra effect information, if necessary.
-					if (questions[quesNum].dissolve === 'effect-dissolve' && !$('#effectDissolvePhoto').val() ) {
+					if ( questions[quesNum].dissolve && dissolveEmpty ) {
 						$('#effectPopup1').bPopup({
-							onClose:function(){ $('#effectDissolvePhoto').focus(); }
+							onClose:function(){ dissolveEmptyElement.focus(); }
 						});
 					}
 					// ok, good, we have all extra effect information. let's output it
 					else {
-						if (whatToDo === 'more') { process(); }
-						else if (whatToDo === 'score') { assignScoring(); }
+						if ( whatToDo === 'more' ) { process(); }
+						else if ( whatToDo === 'score' ) { assignScoring(); }
 					}
 				}
 			}
@@ -573,26 +646,22 @@ jQuery(document).ready(function($) {
 		var answer1 = escapeHtml( $('#mpAns1').val() );
 		var answer2 = escapeHtml( $('#mpAns2').val() );
 		var answer3 = escapeHtml( $('#mpAns3').val() );
-		var answerPhoto0 = $('#mpPho0').val().split("\\").pop();
-		var answerPhoto1 = $('#mpPho1').val().split("\\").pop();
-		var answerPhoto2 = $('#mpPho2').val().split("\\").pop();
-		var answerPhoto3 = $('#mpPho3').val().split("\\").pop();
+		var answerPhoto0 = encodeURI( basePath + $('#mpPho0').val().split("\\").pop() );
+		var answerPhoto1 = encodeURI( basePath + $('#mpPho1').val().split("\\").pop() );
+		var answerPhoto2 = encodeURI( basePath + $('#mpPho2').val().split("\\").pop() );
+		var answerPhoto3 = encodeURI( basePath + $('#mpPho3').val().split("\\").pop() );
 		var response = escapeHtml( $('#mpResponse').val() );
-		var effectClass = '';
-		var dissolvePhoto = '';
 		var soundFile = '';
 		if (questions[quesNum].dissolve) {
-			dissolvePhoto = basePath + $('#effectDissolvePhoto').val().split("\\").pop();
 			effectClass += " effect-dissolve";
 		}
-		else if (questions[quesNum].sound) {
-			soundFile = basePath + $('#effectSoundFile').val().split("\\").pop();
+		if (questions[quesNum].sound) {
 			effectClass += " effect-sound";
 		}
-		else if (questions[quesNum].zoomIn) {
+		if (questions[quesNum].zoomIn) {
 			effectClass += " effect-zoom-in";
 		}
-		else if (questions[quesNum].zoomOut) {
+		if (questions[quesNum].zoomOut) {
 			effectClass += " effect-zoom-out";
 		}
 		outputCode('\t<div class="questions multiphoto' + effectClass + '" id="question' + quesNum + '">\r\n');
@@ -604,14 +673,23 @@ jQuery(document).ready(function($) {
 		//if (questions[quesNum].dissolve) {
 		//	outputCode('\t\t\t<img class="layer" src="'+dissolvePhoto+'" />\r\n');
 		//}
-		outputCode('\t\t\t<img id="ques' + quesNum + 'pho0" class="correct" src="' + basePath + answerPhoto0 + '" />\r\n');
-		outputCode('\t\t\t<img id="ques' + quesNum + 'pho1" class="wrong" src="' + basePath + answerPhoto1 + '" />\r\n');
-		outputCode('\t\t\t<img id="ques' + quesNum + 'pho2" class="wrong" src="' + basePath + answerPhoto2 + '" />\r\n');
-		outputCode('\t\t\t<img id="ques' + quesNum + 'pho3" class="wrong" src="' + basePath + answerPhoto3 + '" />\r\n');
+		outputCode('\t\t\t<img id="ques' + quesNum + 'pho0" class="correct" src="' + answerPhoto0 + '" />\r\n');
+		outputCode('\t\t\t<img id="ques' + quesNum + 'pho1" class="wrong" src="' + answerPhoto1 + '" />\r\n');
+		outputCode('\t\t\t<img id="ques' + quesNum + 'pho2" class="wrong" src="' + answerPhoto2 + '" />\r\n');
+		outputCode('\t\t\t<img id="ques' + quesNum + 'pho3" class="wrong" src="' + answerPhoto3 + '" />\r\n');
 		outputCode('\t\t</div>\r\n');
 		if (questions[quesNum].sound) {
-			outputCode('\t\t\t<div class="sounds">\r\n');
-			outputCode('\t\t\t\t<audio class="after" preload="auto" src="' + soundFile + '"></audio>\r\n');
+			outputCode('\t\t<div class="sounds">\r\n');
+			$('.field-effect-sound').each(function(index, element) {
+				var soundFileName = $(this).val().split("\\").pop();
+				console.log( soundFileName + ', ' + soundFileName.length );
+				if ( soundFileName.length > 0 ) {
+					var soundFileUrl = encodeURI( basePath + soundFileName );
+					if (index == 0) { soundClass = 'before'; }
+					else if (index == 1) { soundClass = 'after'; }
+					outputCode('\t\t\t<audio class="' + soundClass + '" preload="auto" src="' + soundFileUrl + '"></audio>\r\n');
+				}
+			});
 			outputCode('\t\t</div>\r\n');
 		}
 		outputCode('\t\t<div class="question">' + question + '</div>\r\n');
@@ -638,35 +716,44 @@ jQuery(document).ready(function($) {
 		var answer1 = escapeHtml( $('#mcAns1').val() );
 		var answer2 = escapeHtml( $('#mcAns2').val() );
 		var answer3 = escapeHtml( $('#mcAns3').val() );
-		var answerPhoto0 = $('#mcPho0').val().split("\\").pop();
+		var answerPhoto0 = encodeURI( basePath + $('#mcPho0').val().split("\\").pop() );
 		var response = escapeHtml( $('#mcResponse').val() );
 		var effectClass = '';
-		var dissolvePhoto = '';
-		var soundFile = '';
 		if (questions[quesNum].dissolve) {
-			dissolvePhoto = basePath + $('#effectDissolvePhoto').val().split("\\").pop();
 			effectClass += " effect-dissolve";
 		}
-		else if (questions[quesNum].sound) {
-			soundFile = basePath + $('#effectSoundFile').val().split("\\").pop();
+		if (questions[quesNum].sound) {
 			effectClass += " effect-sound";
 		}
-		else if (questions[quesNum].zoomIn) {
+		if (questions[quesNum].zoomIn) {
 			effectClass += " effect-zoom-in";
 		}
-		else if (questions[quesNum].zoomOut) {
+		if (questions[quesNum].zoomOut) {
 			effectClass += " effect-zoom-out";
 		}
 		outputCode('\t<div class="questions multichoice' + effectClass + '" id="question' + quesNum + '">\r\n');
 		outputCode('\t\t<div class="photos">\r\n');
 		if (questions[quesNum].dissolve) {
-			outputCode('\t\t\t<img class="layer" src="' + dissolvePhoto + '" />\r\n');
+			// Using some jQuery-fu here to do this .each() backwards, since CSS needs them backwards.
+			$( $('.field-effect-dissolve').get().reverse() ).each(function(index, element) {
+				var dissolvePhoto = encodeURI( basePath + $(this).val().split("\\").pop() );
+				outputCode('\t\t\t<img class="layer" src="' + dissolvePhoto + '" />\r\n');
+			});
 		}
-		outputCode('\t\t\t<img id="ques'+quesNum+'pho0" class="layer correct" src="' + basePath + answerPhoto0 + '" />\r\n');
+		outputCode('\t\t\t<img id="ques' + quesNum + 'pho0" class="layer correct" src="' + answerPhoto0 + '" />\r\n');
 		outputCode('\t\t</div>\r\n');
 		if (questions[quesNum].sound) {
-			outputCode('\t\t\t<div class="sounds">\r\n');
-			outputCode('\t\t\t\t<audio class="after" preload="auto" src="' + soundFile + '"></audio>\r\n');
+			outputCode('\t\t<div class="sounds">\r\n');
+			$('.field-effect-sound').each(function(index, element) {
+				var soundFileName = $(this).val().split("\\").pop();
+				console.log( soundFileName + ', ' + soundFileName.length );
+				if ( soundFileName.length > 0 ) {
+					var soundFileUrl = encodeURI( basePath + soundFileName );
+					if (index == 0) { soundClass = 'before'; }
+					else if (index == 1) { soundClass = 'after'; }
+					outputCode('\t\t\t<audio class="' + soundClass + '" preload="auto" src="' + soundFileUrl + '"></audio>\r\n');
+				}
+			});
 			outputCode('\t\t</div>\r\n');
 		}
 		outputCode('\t\t<div class="question">' + question + '</div>\r\n');
@@ -696,7 +783,7 @@ jQuery(document).ready(function($) {
 		if (fLabel == '' || fLabel == null) { var falseLabel = 'False' }
 		else { var falseLabel = fLabel; }
 
-		var answerPhoto0 = $('#tfPho0').val().split("\\").pop();
+		var answerPhoto0 = encodeURI( basePath + $('#tfPho0').val().split("\\").pop() );
 		var response = $('#tfResponse').val();
 		if (answer0 === 'true') {
 			var answerValue0 = 'correct';
@@ -707,32 +794,41 @@ jQuery(document).ready(function($) {
 			var answerValue1 = 'correct';
 		}
 		var effectClass = '';
-		var dissolvePhoto = '';
-		var soundFile = '';
 		if (questions[quesNum].dissolve) {
-			dissolvePhoto = basePath + $('#effectDissolvePhoto').val().split("\\").pop();
 			effectClass += " effect-dissolve";
 		}
-		else if (questions[quesNum].sound) {
-			soundFile = basePath + $('#effectSoundFile').val().split("\\").pop();
+		if (questions[quesNum].sound) {
 			effectClass += " effect-sound";
 		}
-		else if (questions[quesNum].zoomIn) {
+		if (questions[quesNum].zoomIn) {
 			effectClass += " effect-zoom-in";
 		}
-		else if (questions[quesNum].zoomOut) {
+		if (questions[quesNum].zoomOut) {
 			effectClass += " effect-zoom-out";
 		}
 		outputCode('\t<div class="questions truefalse' + effectClass + '" id="question' + quesNum + '">\r\n');
 		outputCode('\t\t<div class="photos">\r\n');
 		if (questions[quesNum].dissolve) {
-			outputCode('\t\t\t<img class="layer" src="' + dissolvePhoto + '" />\r\n');
+			// Using some jQuery-fu here to do this .each() backwards, since CSS needs them backwards.
+			$( $('.field-effect-dissolve').get().reverse() ).each(function(index, element) {
+				var dissolvePhoto = encodeURI( basePath + $(this).val().split("\\").pop() );
+				outputCode('\t\t\t<img class="layer" src="' + dissolvePhoto + '" />\r\n');
+			});
 		}
-		outputCode('\t\t\t<img id="ques' + quesNum + 'pho0" class="layer correct" src="' + basePath + answerPhoto0 + '" />\r\n');
+		outputCode('\t\t\t<img id="ques' + quesNum + 'pho0" class="layer correct" src="' + answerPhoto0 + '" />\r\n');
 		outputCode('\t\t</div>\r\n');
 		if (questions[quesNum].sound) {
-			outputCode('\t\t\t<div class="sounds">\r\n');
-			outputCode('\t\t\t\t<audio class="after" preload="auto" src="' + soundFile + '"></audio>\r\n');
+			outputCode('\t\t<div class="sounds">\r\n');
+			$('.field-effect-sound').each(function(index, element) {
+				var soundFileName = $(this).val().split("\\").pop();
+				console.log( soundFileName + ', ' + soundFileName.length );
+				if ( soundFileName.length > 0 ) {
+					var soundFileUrl = encodeURI( basePath + soundFileName );
+					if (index == 0) { soundClass = 'before'; }
+					else if (index == 1) { soundClass = 'after'; }
+					outputCode('\t\t\t<audio class="' + soundClass + '" preload="auto" src="' + soundFileUrl + '"></audio>\r\n');
+				}
+			});
 			outputCode('\t\t</div>\r\n');
 		}
 		outputCode('\t\t<div class="question">' + question + '</div>\r\n');
@@ -760,9 +856,13 @@ jQuery(document).ready(function($) {
 		else if (questions[quesNum].quesType === 'multiple choice') { outputMultiChoice(); }
 		else if (questions[quesNum].quesType === 'true/false') { outputTrueFalse(); }
 
+		// Need to refactor the script to allow special effects on the judgment screen
+//		$('#quiz fieldset').not('.quesEffects').hide();
+
 		$('#quiz').hide();
+
 		$('#assignScoring').show();
-		$('<p>Your quiz has '+quesNum+' questions.</p>').insertBefore('#scoringLabels');
+		$('<p>Your quiz has ' + quesNum + ' questions.</p>').insertBefore('#scoringLabels');
 
 
 		// Generate the scoring response range, based on how many questions there were.
@@ -786,14 +886,14 @@ jQuery(document).ready(function($) {
 		$('#labelScoring').removeClass('active');
 		$('#finish').unbind();
 		$('#finish').hide();
-		var judgmentImg = $('#judgment').val().split("\\").pop();
+		var judgmentImg = encodeURI( basePath + $('#judgment').val().split("\\").pop() );
 		var scoringResponse = $('#scoringResponse').val();
 		var scoringRangeSize = 0;
 		var scoringRange = [];
 		var scoringEvaluation = [];
 
 		outputCode('\t<div id="scoring">\r\n');
-		outputCode('\t\t<div class="photos"><img id="judgment" src="' + basePath + judgmentImg + '" /></div>\r\n');
+		outputCode('\t\t<div class="photos"><img id="judgment" src="' + judgmentImg + '" /></div>\r\n');
 		outputCode('\t\t<div id="response">' + scoringResponse + '</div>\r\n');
 		outputCode('\t</div>\r\n');
 		outputCode('</div>\r\r\n');
@@ -815,6 +915,7 @@ jQuery(document).ready(function($) {
 		});
 		$('.evaluation').each( function(index) {
 			thisEvaluation = escapeHtml( $(this).val() );
+			console.log( thisEvaluation );
 			outputCode('\tscoringEvaluation[' + index + '] = "' + thisEvaluation + '";\r\n');
 		});
 
@@ -825,7 +926,7 @@ jQuery(document).ready(function($) {
 
 		$('#assignScoring').hide();
 		$('#codeOutput').show();
-		$('<p>Please select all the code above, copy it, and paste it into a new Blox HTML asset. Then you are done!</p>').insertAfter('#codeOutput');
+		$('<p>Please select all the code above, copy it, and paste it into a new Blox or TCMS HTML asset. Then you are done!</p>').insertAfter('#codeOutput');
 
 	}
 
@@ -834,6 +935,7 @@ jQuery(document).ready(function($) {
 		$('#true').attr('checked', false);
 		$('#false').attr('checked', false);
 		$('#'+form+' input[type="checkbox"]').not('#customLabelsCheck').attr('checked', false);
+		$('#'+form+' .supplemental' ).prop('selectedIndex',0);
 	}
 
 

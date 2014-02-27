@@ -4,15 +4,32 @@ Description: This script enables Post-Dispatch staffers to write questions for a
              Outputs HTML code that can be copied and pasted into TCMS or Blox.
              Requires four digits from the path to the quiz's MDS directory.
      Author: Josh Renaud
-    Version: 0.3a
-       Date: 2014-02-01
+    Version: 0.3b
+       Date: 2014-02-27
 ---------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------
 
 CHANGELOG
 
+2014-02-27 -- v0.3b
+
+* New features:
+  + Support for multiple chained images in a dissolve sequence
+  + Support for sound at beginning of question
+* Fixes:
+  + "Play" button now outputs with the cover image code.
+  + Photo/sound filenames with spaces are now encoded
+  + Curly quotes are now converted to HTML entities
+* Still to come:
+  + Support for effects on judgment screen
+  + Support for zoom effect
+  + Other small things
+
+
+
 2014-02-01 -- v0.3a
+
 MAJOR CHANGES:
 * Beginning to add support for new effects that were recently implemented in quizReader.
   + Dissolve effect - You can add one image to be faded to after question is answered

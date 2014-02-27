@@ -116,16 +116,42 @@
 	<fieldset id="quesEffects">
 		<legend>Special effects</legend>
 		<ol class="dissolve">
-			<li class="radios"><span><input id="effectDissolve" value="effect-dissolve" name="effectDissolve" type="checkbox" /><label for="effectDissolve">Dissolve (show image(s) after user answers)</label></span>&nbsp;</li>
+			<li class="radios"><span><input id="effectDissolve" value="effect-dissolve" name="effectDissolve" type="checkbox" /><label for="effectDissolve">Dissolve (show image(s) after user answers)</label></span>&nbsp;
+				<span class="supplemental">
+					<label for="effectDissolveNum">How many?</label>
+					<select id="effectDissolveNum" name="effectDissolveNum" type="checkbox">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+					</select>
+				</span>
+			</li>
 		</ol>
 		<ol class="dissolve effectPicker">
-			<li><label for="effectDissolvePhoto">Photo file name</label><input type="file" id="effectDissolvePhoto" class="field-photo" /></li>
+			<li><label for="effectDissolvePhoto">Photo file name</label><input type="file" id="effectDissolvePhoto" class="field-photo field-effect-dissolve" /></li>
 		</ol>
 		<ol class="sound">
-			<li class="radios"><span><input id="effectSound" value="effect-sound" name="effectSound" type="checkbox" /><label for="effectSound">Sound (plays after user answers)</label></span>&nbsp;</li>
+			<li class="radios"><span><input id="effectSound" value="effect-sound" name="effectSound" type="checkbox" /><label for="effectSound">Sound</label></span>&nbsp;
+				<span class="supplemental">
+					<label for="effectSoundType">When?</label>
+					<select id="effectSoundType" name="effectSoundType" type="checkbox">
+						<option value="after">After answer</option>
+						<option value="before">Before answer</option>
+						<option value="both">Both</option>
+					</select>
+				</span>
+			</li>
 		</ol>
 		<ol class="sound effectPicker">
-			<li><label for="effectSoundFile">Sound file name</label><input type="file" id="effectSoundFile" class="field-sound" /></li>
+			<li><label for="effectSoundFileBefore">Sound file name</label><input type="file" id="effectSoundFileBefore" class="field-sound field-effect-sound" /> <span>(before user answers)</span></li>
+			<li><label for="effectSoundFileAfter">Sound file name</label><input type="file" id="effectSoundFileAfter" class="field-sound field-effect-sound" /> <span>(after user answers)</span></li>
 		</ol>
 	</fieldset>
 
