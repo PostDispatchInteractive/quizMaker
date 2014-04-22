@@ -4,13 +4,19 @@ Description: This script enables Post-Dispatch staffers to write questions for a
              Outputs HTML code that can be copied and pasted into TCMS or Blox.
              Requires four digits from the path to the quiz's MDS directory.
      Author: Josh Renaud
-    Version: 0.3b
-       Date: 2014-02-27
+    Version: 0.3c
+       Date: 2014-04-04
 ---------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------
 
 CHANGELOG
+
+
+2014-04-04 -- v0.3c
+
+* Minor bug fix: effectClass variable declaration was missing, thus breaking effects in multiPhoto questions.
+
 
 2014-02-27 -- v0.3b
 

@@ -652,6 +652,7 @@ jQuery(document).ready(function($) {
 		var answerPhoto3 = encodeURI( basePath + $('#mpPho3').val().split("\\").pop() );
 		var response = escapeHtml( $('#mpResponse').val() );
 		var soundFile = '';
+		var effectClass = '';
 		if (questions[quesNum].dissolve) {
 			effectClass += " effect-dissolve";
 		}
