@@ -139,7 +139,7 @@ jQuery(document).ready(function($) {
 	}
 
 	function countColor() {
-		console.log('countColor');
+		//console.log('countColor');
 		var numWords = wordCount( $(this) );
 		var color = '#080'; 
 		if ( numWords > 34 ) { color = '#A00'; } 
@@ -683,7 +683,7 @@ jQuery(document).ready(function($) {
 			outputCode('\t\t<div class="sounds">\r\n');
 			$('.field-effect-sound').each(function(index, element) {
 				var soundFileName = $(this).val().split("\\").pop();
-				console.log( soundFileName + ', ' + soundFileName.length );
+				//console.log( soundFileName + ', ' + soundFileName.length );
 				if ( soundFileName.length > 0 ) {
 					var soundFileUrl = encodeURI( basePath + soundFileName );
 					if (index == 0) { soundClass = 'before'; }
@@ -747,7 +747,7 @@ jQuery(document).ready(function($) {
 			outputCode('\t\t<div class="sounds">\r\n');
 			$('.field-effect-sound').each(function(index, element) {
 				var soundFileName = $(this).val().split("\\").pop();
-				console.log( soundFileName + ', ' + soundFileName.length );
+				//console.log( soundFileName + ', ' + soundFileName.length );
 				if ( soundFileName.length > 0 ) {
 					var soundFileUrl = encodeURI( basePath + soundFileName );
 					if (index == 0) { soundClass = 'before'; }
@@ -822,7 +822,7 @@ jQuery(document).ready(function($) {
 			outputCode('\t\t<div class="sounds">\r\n');
 			$('.field-effect-sound').each(function(index, element) {
 				var soundFileName = $(this).val().split("\\").pop();
-				console.log( soundFileName + ', ' + soundFileName.length );
+				//console.log( soundFileName + ', ' + soundFileName.length );
 				if ( soundFileName.length > 0 ) {
 					var soundFileUrl = encodeURI( basePath + soundFileName );
 					if (index == 0) { soundClass = 'before'; }
@@ -916,7 +916,7 @@ jQuery(document).ready(function($) {
 		});
 		$('.evaluation').each( function(index) {
 			thisEvaluation = escapeHtml( $(this).val() );
-			console.log( thisEvaluation );
+			//console.log( thisEvaluation );
 			outputCode('\tscoringEvaluation[' + index + '] = "' + thisEvaluation + '";\r\n');
 		});
 
